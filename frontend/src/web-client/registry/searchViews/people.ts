@@ -1,0 +1,120 @@
+"use client";
+
+import {
+  GENDER_LABELS,
+  PERSON_TYPE_OPTIONS,
+  RACE_COLOR_LABELS,
+  SEX_LABELS,
+  STATUS_LABELS,
+} from "@/modules/people/shared/domain/people.constants";
+import type { SearchViewDefinition } from "@/web-client/search/types";
+
+export const peopleSearchView: SearchViewDefinition = {
+  id: "people.search",
+  model: "people.list",
+  searchPlaceholder:
+    "Pesquisar pessoas em qualquer campo relevante do cadastro",
+  features: {
+    favorites: true,
+    presets: true,
+    advancedFilters: true,
+    groupBy: true,
+    clearAll: true,
+  },
+  presets: [
+    {
+      id: "active",
+      label: "Ativos",
+      domain: { type: "condition", field: "status", operator: "=", value: "Ativo" },
+    },
+    {
+      id: "health",
+      label: "Com condicao de saude",
+      domain: {
+        type: "condition",
+        field: "hasHealthCondition",
+        operator: "=",
+        value: "true",
+      },
+    },
+    {
+      id: "medication",
+      label: "Com medicacao",
+      domain: {
+        type: "condition",
+        field: "hasMedication",
+        operator: "=",
+        value: "true",
+      },
+    },
+  ],
+  filterCombinators: ["and"],
+  fields: [
+    { name: "fullName", label: "Nome completo", type: "text", operators: ["ilike", "contains", "=", "starts_with", "ends_with"] },
+    { name: "socialName", label: "Nome social", type: "text", operators: ["ilike", "contains", "=", "starts_with", "ends_with"] },
+    { name: "birthDate", label: "Nascimento", type: "date", operators: ["between", ">=", "<=", "="] },
+    {
+      name: "sex",
+      label: "Sexo",
+      type: "select",
+      operators: ["="],
+      options: Object.entries(SEX_LABELS).map(([value, label]) => ({ value, label })),
+    },
+    {
+      name: "gender",
+      label: "Genero",
+      type: "select",
+      operators: ["="],
+      options: Object.entries(GENDER_LABELS).map(([value, label]) => ({ value, label })),
+    },
+    {
+      name: "raceColor",
+      label: "Raca/Cor",
+      type: "select",
+      operators: ["="],
+      options: Object.entries(RACE_COLOR_LABELS).map(([value, label]) => ({ value, label })),
+    },
+    { name: "maritalStatus", label: "Estado civil", type: "text", operators: ["=", "contains"] },
+    { name: "nationality", label: "Nacionalidade", type: "text", operators: ["=", "contains", "ilike"] },
+    { name: "document", label: "CPF", type: "text", operators: ["contains", "=", "starts_with", "ends_with"] },
+    { name: "rg", label: "RG", type: "text", operators: ["contains", "=", "starts_with", "ends_with"] },
+    { name: "nis", label: "NIS", type: "text", operators: ["contains", "=", "starts_with", "ends_with"] },
+    { name: "email", label: "Email", type: "text", operators: ["ilike", "contains", "=", "starts_with", "ends_with"] },
+    { name: "phone", label: "Telefone", type: "text", operators: ["contains", "=", "starts_with", "ends_with"] },
+    { name: "departureReason", label: "Motivo do desligamento", type: "text", operators: ["ilike", "contains", "="] },
+    { name: "notes", label: "Notas", type: "text", operators: ["ilike", "contains"] },
+    { name: "profileSummary", label: "Resumo", type: "text", operators: ["ilike", "contains"] },
+    {
+      name: "personType",
+      label: "Tipo",
+      type: "select",
+      operators: ["="],
+      options: PERSON_TYPE_OPTIONS.map((value) => ({ value, label: value })),
+    },
+    {
+      name: "status",
+      label: "Status",
+      type: "select",
+      operators: ["="],
+      options: Object.entries(STATUS_LABELS).map(([value, label]) => ({ value, label })),
+    },
+    { name: "tags", label: "Tags", type: "multi-select", operators: ["in", "contains", "is_null", "not_null"] },
+    { name: "hasHealthCondition", label: "Condicao de saude", type: "boolean", operators: ["="] },
+    { name: "hasMedication", label: "Medicacao", type: "boolean", operators: ["="] },
+    { name: "createdAt", label: "Cadastro", type: "date", operators: ["between", ">=", "<=", "="] },
+    { name: "updatedAt", label: "Atualizado em", type: "date", operators: ["between", ">=", "<=", "="] },
+  ],
+  groupBy: [
+    { field: "status", label: "Status" },
+    { field: "personType", label: "Tipo" },
+    { field: "sex", label: "Sexo" },
+    { field: "gender", label: "Genero" },
+    { field: "raceColor", label: "Raca/Cor" },
+    { field: "nationality", label: "Nacionalidade" },
+    { field: "maritalStatus", label: "Estado civil" },
+    { field: "tags", label: "Tags" },
+    { field: "hasHealthCondition", label: "Condicao de saude" },
+    { field: "hasMedication", label: "Medicacao" },
+    { field: "createdAt", label: "Cadastro" },
+  ],
+};

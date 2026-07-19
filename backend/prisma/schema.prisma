@@ -1,0 +1,2476 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TenantStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ProgramType {
+  SCFV
+  PAIF
+  PAEFI
+  CULTURAL
+  QUALIFICATION
+  OTHER
+}
+
+enum ProgramStatus {
+  PLANNED
+  ACTIVE
+  CLOSED
+}
+
+enum ProjectStatus {
+  PLANNED
+  ACTIVE
+  CLOSED
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  ENDED
+}
+
+enum ProjectParticipationRole {
+  PUBLICO_ATENDIDO
+  FAMILIAR
+  VOLUNTARIO
+  EQUIPE_TECNICA
+  FUNCIONARIO
+  OFICINEIRO
+  PARCEIRO
+  DOADOR
+  PATROCINADOR
+}
+
+enum ParticipationKind {
+  PARTICIPANT
+  TEAM
+}
+
+enum PeopleGroupType {
+  CYCLE
+  SEGMENT
+  TEAM_POOL
+  NETWORK
+  OTHER
+}
+
+enum PeopleGroupPurpose {
+  PUBLICO
+  EQUIPE
+}
+
+enum ActionStatus {
+  PLANNED
+  EXECUTED
+  CANCELED
+}
+
+enum ActionTarget {
+  PROJECT
+  PROJECT_GROUP
+  PEOPLE_GROUP
+  ENROLLMENT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  EXCUSED
+}
+
+enum ActionPeopleParticipationRole {
+  PARTICIPANTE
+  FACILITADOR
+  APOIO
+  VOLUNTARIO
+  RESPONSAVEL_TECNICO
+  CONVIDADO
+}
+
+enum IncomeFrequency {
+  MONTHLY
+  WEEKLY
+  BIWEEKLY
+  ANNUAL
+  ONCE
+}
+
+enum PersonFinancialEntryType {
+  INCOME
+  EXPENSE
+  TRANSFER
+  BENEFIT
+}
+
+enum AccessLogAction {
+  LOGIN
+  REFRESH
+  LOGOUT
+}
+
+enum AuditLogAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum PantryDonorType {
+  PERSON
+  COMPANY
+}
+
+enum PantryExitType {
+  ATTENDED
+  DONATION
+  EVENT
+  PARTY
+  CORRECTION
+}
+
+enum DepositDonorType {
+  PERSON
+  COMPANY
+}
+
+enum DepositExitType {
+  LOAN
+  FINAL_REMOVAL
+  TRANSFER
+  ADJUSTMENT
+  LOSS
+}
+
+enum TaskOrganizerStatus {
+  BACKLOG
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+  BLOCKED
+}
+
+enum TaskOrganizerPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TaskOrganizerKind {
+  FEATURE
+  BUG
+  ROUTINE
+}
+
+enum TenantRegistrationMethod {
+  EMAIL
+  GOOGLE
+  MICROSOFT
+}
+
+enum TenantRegistrationStatus {
+  PENDING_OAUTH
+  PENDING_VERIFICATION
+  CONFIRMED
+  EXPIRED
+}
+
+enum PersonContactType {
+  EMAIL
+  PHONE
+}
+
+enum PersonContactRole {
+  SELF
+  RESPONSIBLE
+  EMERGENCY
+}
+
+enum SensitiveAccessAction {
+  READ
+  UPDATE
+}
+
+model Tenant {
+  id          String       @id @default(uuid()) @db.Char(36)
+  name        String       @unique
+  slug        String       @unique
+  logoUrl     String?
+  cnpj        String?
+  startYear   Int?
+  description String?      @db.Text
+  status      TenantStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  users                                User[]
+  roles                                Role[]
+  mfaTotpSetups                        UserMfaTotpSetup[]
+  mfaChallenges                        UserMfaChallenge[]
+  trustedDevices                       UserTrustedDevice[]
+  mfaRecoveryCodes                     UserMfaRecoveryCode[]
+  people                               Person[]
+  peopleGroups                         PeopleGroup[]
+  peopleGroupParticipations            PeopleGroupParticipation[]
+  peopleSegments                       PeopleSegment[]
+  peopleSegmentMemberships             PeopleSegmentMembership[]
+  personContacts                       PersonContact[]
+  personComments                       PersonComment[]
+  personAttachments                    PersonAttachment[]
+  personRecordComments                 PersonRecordComment[]
+  personRecordAttachments              PersonRecordAttachment[]
+  personRecordTags                     PersonRecordTag[]
+  personSensitiveDocuments             PersonSensitiveDocument[]
+  personSensitiveAccessLogs            PersonSensitiveAccessLog[]
+  rolePermissions                      RolePermission[]
+  userRoles                            UserRole[]
+  households                           Household[]
+  householdMembers                     HouseholdMember[]
+  householdProfiles                    HouseholdProfile[]
+  personRelations                      PersonRelation[]
+  personFinancialEntries               PersonFinancialEntry[]
+  personIncomes                        PersonIncome[]
+  personExpenses                       PersonExpense[]
+  personBenefits                       PersonBenefit[]
+  personDetentions                     PersonDetention[]
+  householdAssets                      HouseholdAsset[]
+  personAssets                         PersonAsset[]
+  householdTransfers                   HouseholdTransfer[]
+  personHealthConditions               PersonHealthCondition[]
+  personMedications                    PersonMedication[]
+  personEducations                     PersonEducation[]
+  userSessions                         UserSession[]
+  passwordResetTokens                  PasswordResetToken[]
+  accessLogs                           AccessLog[]
+  auditLogs                            AuditLog[]
+  pantryItems                          PantryItem[]
+  pantrySectors                        PantrySector[]
+  pantryEntries                        PantryEntry[]
+  pantryExits                          PantryExit[]
+  pantryDonors                         PantryDonor[]
+  pantryItemComments                   PantryItemComment[]
+  pantryItemAttachments                PantryItemAttachment[]
+  pantryDonorComments                  PantryDonorComment[]
+  pantryDonorAttachments               PantryDonorAttachment[]
+  pantryEntryComments                  PantryEntryComment[]
+  pantryEntryAttachments               PantryEntryAttachment[]
+  pantryExitComments                   PantryExitComment[]
+  pantryExitAttachments                PantryExitAttachment[]
+  pantryExitAllocations                PantryExitAllocation[]
+  depositItems                         DepositItem[]
+  depositSectors                       DepositSector[]
+  depositEntries                       DepositEntry[]
+  depositExits                         DepositExit[]
+  depositDonors                        DepositDonor[]
+  depositItemComments                  DepositItemComment[]
+  depositItemAttachments               DepositItemAttachment[]
+  depositDonorComments                 DepositDonorComment[]
+  depositDonorAttachments              DepositDonorAttachment[]
+  depositEntryComments                 DepositEntryComment[]
+  depositEntryAttachments              DepositEntryAttachment[]
+  depositExitComments                  DepositExitComment[]
+  depositExitAttachments               DepositExitAttachment[]
+  depositExitAllocations               DepositExitAllocation[]
+  taskOrganizerTasks                   TaskOrganizerTask[]
+  taskOrganizerChecklistItems          TaskOrganizerChecklistItem[]
+  taskOrganizerSubtasks                TaskOrganizerSubtask[]
+  taskOrganizerComments                TaskOrganizerComment[]
+  taskOrganizerAttachments             TaskOrganizerAttachment[]
+  taskOrganizerTaskDependencies        TaskOrganizerTaskDependency[]
+  programs                             Program[]
+  projects                             Project[]
+  projectComments                      ProjectComment[]
+  projectAttachments                   ProjectAttachment[]
+  programComments                      ProgramComment[]
+  programAttachments                   ProgramAttachment[]
+  projectGroups                        ProjectGroup[]
+  projectPeopleGroups                  ProjectPeopleGroup[]
+  projectEnrollments                   ProjectEnrollment[]
+  projectEnrollmentGroupMemberships    ProjectEnrollmentGroupMembership[]
+  actionTypes                          ActionType[]
+  projectActions                       ProjectAction[]
+  projectActionComments                ProjectActionComment[]
+  projectActionAttachments             ProjectActionAttachment[]
+  actionPeopleGroups                   ActionPeopleGroup[]
+  projectActionAttendances             ProjectActionAttendance[]
+  projectActionPeopleParticipations    ProjectActionPeopleParticipation[]
+
+  @@index([status])
+}
+
+model User {
+  id                String    @id @default(uuid()) @db.Char(36)
+  tenantId          String    @db.Char(36)
+  name              String?
+  email             String
+  phone             String?
+  bio               String?   @db.Text
+  passwordHash      String
+  avatarUrl         String?
+  isActive          Boolean   @default(true)
+  mfaTotpEnabled    Boolean   @default(false)
+  mfaTotpSecretEnc  String?   @db.Text
+  mfaTotpVerifiedAt DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant                              Tenant                       @relation(fields: [tenantId], references: [id])
+  roles                               UserRole[]
+  sessions                            UserSession[]
+  passwordResetTokens                 PasswordResetToken[]
+  accessLogs                          AccessLog[]
+  auditLogs                           AuditLog[]
+  mfaTotpSetups                       UserMfaTotpSetup[]
+  mfaChallenges                       UserMfaChallenge[]
+  trustedDevices                      UserTrustedDevice[]
+  recoveryCodes                       UserMfaRecoveryCode[]
+  personSensitiveAccessLogs           PersonSensitiveAccessLog[]
+  personComments                      PersonComment[]
+  personAttachments                   PersonAttachment[]
+  personRecordComments                PersonRecordComment[]
+  personRecordAttachments             PersonRecordAttachment[]
+  pantryItemComments                  PantryItemComment[]
+  pantryItemAttachments               PantryItemAttachment[]
+  pantryDonorComments                 PantryDonorComment[]
+  pantryDonorAttachments              PantryDonorAttachment[]
+  pantryEntryComments                 PantryEntryComment[]
+  pantryEntryAttachments              PantryEntryAttachment[]
+  pantryExitComments                  PantryExitComment[]
+  pantryExitAttachments               PantryExitAttachment[]
+  depositItemComments                 DepositItemComment[]
+  depositItemAttachments              DepositItemAttachment[]
+  depositDonorComments                DepositDonorComment[]
+  depositDonorAttachments             DepositDonorAttachment[]
+  depositEntryComments                DepositEntryComment[]
+  depositEntryAttachments             DepositEntryAttachment[]
+  depositExitComments                 DepositExitComment[]
+  depositExitAttachments              DepositExitAttachment[]
+  projectActionsCreated               ProjectAction[]
+  projectComments                     ProjectComment[]
+  projectAttachments                  ProjectAttachment[]
+  programComments                     ProgramComment[]
+  programAttachments                  ProgramAttachment[]
+  projectActionComments               ProjectActionComment[]
+  projectActionAttachments            ProjectActionAttachment[]
+  assignedTaskOrganizerTasks          TaskOrganizerTask[]          @relation("TaskOrganizerAssignedUser")
+  assignedTaskOrganizerChecklistItems TaskOrganizerChecklistItem[] @relation("TaskOrganizerChecklistAssignedUser")
+  assignedTaskOrganizerSubtasks       TaskOrganizerSubtask[]       @relation("TaskOrganizerSubtaskAssignedUser")
+  taskOrganizerComments               TaskOrganizerComment[]
+  taskOrganizerAttachments            TaskOrganizerAttachment[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+model Role {
+  id          String   @id @default(uuid()) @db.Char(36)
+  tenantId    String   @db.Char(36)
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant           @relation(fields: [tenantId], references: [id])
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model Permission {
+  id          String   @id @default(uuid()) @db.Char(36)
+  key         String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  id           String   @id @default(uuid()) @db.Char(36)
+  tenantId     String   @db.Char(36)
+  roleId       String   @db.Char(36)
+  permissionId String   @db.Char(36)
+  createdAt    DateTime @default(now())
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id])
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([tenantId, roleId, permissionId])
+  @@index([tenantId])
+}
+
+model UserRole {
+  id        String   @id @default(uuid()) @db.Char(36)
+  tenantId  String   @db.Char(36)
+  userId    String   @db.Char(36)
+  roleId    String   @db.Char(36)
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  @@unique([tenantId, userId, roleId])
+  @@index([tenantId])
+}
+
+model Person {
+  id              String    @id @default(uuid()) @db.Char(36)
+  tenantId        String    @db.Char(36)
+  fullName        String
+  birthDate       DateTime?
+  socialName      String?
+  sex             String?
+  gender          String?
+  raceColor       String?
+  maritalStatus   String?
+  nationality     String?
+  email           String?
+  phone           String?
+  document        String?
+  rg              String?
+  nis             String?
+  personType      String    @default("Atendido")
+  status          String?
+  departureReason String?   @db.Text
+  tags            String?   @db.Text
+  notes           String?   @db.Text
+  profileSummary  String?   @db.Text
+  avatarUrl       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tenant                     Tenant                             @relation(fields: [tenantId], references: [id])
+  householdMembers           HouseholdMember[]
+  relations                  PersonRelation[]                   @relation("PersonRelationPerson")
+  relatedRelations           PersonRelation[]                   @relation("PersonRelationRelated")
+  financialEntries           PersonFinancialEntry[]
+  incomes                    PersonIncome[]
+  expenses                   PersonExpense[]
+  benefits                   PersonBenefit[]
+  detentions                 PersonDetention[]
+  assets                     PersonAsset[]
+  transfers                  HouseholdTransfer[]
+  healthConditions           PersonHealthCondition[]
+  medications                PersonMedication[]
+  educations                 PersonEducation[]
+  contacts                   PersonContact[]
+  comments                   PersonComment[]
+  attachments                PersonAttachment[]
+  recordComments             PersonRecordComment[]
+  recordAttachments          PersonRecordAttachment[]
+  recordTags                 PersonRecordTag[]
+  sensitiveDocument          PersonSensitiveDocument?
+  sensitiveAccessLogs        PersonSensitiveAccessLog[]
+  projectEnrollments         ProjectEnrollment[]
+  peopleGroupParticipations  PeopleGroupParticipation[]
+  peopleSegmentMemberships   PeopleSegmentMembership[]
+  actionPeopleParticipations ProjectActionPeopleParticipation[]
+
+  @@index([tenantId])
+  @@index([fullName])
+}
+
+model PersonContact {
+  id           String            @id @default(uuid()) @db.Char(36)
+  tenantId     String            @db.Char(36)
+  personId     String            @db.Char(36)
+  role         PersonContactRole @default(SELF)
+  type         PersonContactType
+  label        String?
+  name         String?
+  relationship String?
+  value        String
+  isPrimary    Boolean           @default(false)
+  isWhatsapp   Boolean           @default(false)
+  notes        String?           @db.Text
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+
+  @@unique([tenantId, personId, type, value])
+  @@index([tenantId])
+  @@index([personId])
+  @@index([tenantId, personId, type])
+}
+
+model PersonComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  personId       String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant @relation(fields: [tenantId], references: [id])
+  person     Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  authorUser User?  @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([personId, createdAt])
+  @@index([authorUserId])
+}
+
+model PersonAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  personId         String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant @relation(fields: [tenantId], references: [id])
+  person         Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  uploadedByUser User?  @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([personId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model PersonRecordComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  personId       String   @db.Char(36)
+  recordType     String   @db.VarChar(64)
+  recordId       String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant @relation(fields: [tenantId], references: [id])
+  person     Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  authorUser User?  @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([personId, recordType, recordId, createdAt], map: "PRComment_record_idx")
+  @@index([authorUserId])
+}
+
+model PersonRecordAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  personId         String   @db.Char(36)
+  recordType       String   @db.VarChar(64)
+  recordId         String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant @relation(fields: [tenantId], references: [id])
+  person         Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  uploadedByUser User?  @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([personId, recordType, recordId, createdAt], map: "PRAttach_record_idx")
+  @@index([uploadedByUserId])
+}
+
+model PersonRecordTag {
+  id         String   @id @default(uuid()) @db.Char(36)
+  tenantId   String   @db.Char(36)
+  personId   String   @db.Char(36)
+  recordType String   @db.VarChar(64)
+  recordId   String   @db.Char(36)
+  value      String   @db.VarChar(120)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, recordType, recordId, value], map: "PRTag_record_value_key")
+  @@index([tenantId])
+  @@index([personId, recordType, recordId], map: "PRTag_record_idx")
+}
+
+model PersonSensitiveDocument {
+  id            String   @id @default(uuid()) @db.Char(36)
+  tenantId      String   @db.Char(36)
+  personId      String   @unique @db.Char(36)
+  schemaVersion Int      @default(1)
+  dataEnc       Bytes
+  iv            Bytes
+  tag           Bytes
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+
+  @@index([tenantId])
+}
+
+model PersonSensitiveAccessLog {
+  id        String                @id @default(uuid()) @db.Char(36)
+  tenantId  String                @db.Char(36)
+  personId  String                @db.Char(36)
+  userId    String                @db.Char(36)
+  action    SensitiveAccessAction
+  ipAddress String?               @db.VarChar(64)
+  userAgent String?               @db.Text
+  createdAt DateTime              @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+  @@index([userId])
+  @@index([tenantId, personId, action])
+}
+
+model Household {
+  id        String   @id @default(uuid()) @db.Char(36)
+  tenantId  String   @db.Char(36)
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant                   Tenant                 @relation(fields: [tenantId], references: [id])
+  members                  HouseholdMember[]
+  profile                  HouseholdProfile?
+  financialEntries         PersonFinancialEntry[]
+  outgoingFinancialEntries PersonFinancialEntry[] @relation("PersonFinancialEntryFromHousehold")
+  incomingFinancialEntries PersonFinancialEntry[] @relation("PersonFinancialEntryToHousehold")
+  assets                   HouseholdAsset[]
+  incomes                  PersonIncome[]
+  expenses                 PersonExpense[]
+  benefits                 PersonBenefit[]
+  outgoingTransfers        HouseholdTransfer[]    @relation("HouseholdTransferFrom")
+  incomingTransfers        HouseholdTransfer[]    @relation("HouseholdTransferTo")
+
+  @@index([tenantId])
+}
+
+model HouseholdMember {
+  id                  String    @id @default(uuid()) @db.Char(36)
+  tenantId            String    @db.Char(36)
+  householdId         String    @db.Char(36)
+  personId            String    @db.Char(36)
+  role                String?
+  isLegalGuardian     Boolean   @default(false)
+  isHouseholdHead     Boolean   @default(false)
+  isIncomeContributor Boolean   @default(false)
+  isProvider          Boolean   @default(false)
+  isDependent         Boolean   @default(false)
+  notes               String?   @db.Text
+  startDate           DateTime?
+  endDate             DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  household Household @relation(fields: [householdId], references: [id])
+  person    Person    @relation(fields: [personId], references: [id])
+
+  @@unique([householdId, personId])
+  @@index([tenantId])
+  @@index([householdId])
+  @@index([personId])
+}
+
+model HouseholdProfile {
+  id           String   @id @default(uuid()) @db.Char(36)
+  tenantId     String   @db.Char(36)
+  householdId  String   @unique @db.Char(36)
+  type         String?
+  condition    String?
+  ownership    String?
+  areaM2       Float?
+  rooms        Int?
+  bathrooms    Int?
+  cep          String?  @db.VarChar(8)
+  street       String?
+  number       String?
+  complement   String?
+  neighborhood String?
+  city         String?
+  state        String?  @db.VarChar(2)
+  ibge         String?  @db.VarChar(7)
+  gia          String?
+  ddd          String?  @db.VarChar(3)
+  siafi        String?  @db.VarChar(4)
+  reference    String?  @db.Text
+  notes        String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  household Household @relation(fields: [householdId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, cep])
+}
+
+model HouseholdAsset {
+  id          String   @id @default(uuid()) @db.Char(36)
+  tenantId    String   @db.Char(36)
+  householdId String   @db.Char(36)
+  category    String
+  item        String
+  quantity    Int?     @default(1)
+  condition   String?
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  household Household @relation(fields: [householdId], references: [id])
+
+  @@index([tenantId])
+  @@index([householdId])
+}
+
+model PersonAsset {
+  id        String   @id @default(uuid()) @db.Char(36)
+  tenantId  String   @db.Char(36)
+  personId  String   @db.Char(36)
+  category  String
+  item      String
+  quantity  Int?     @default(1)
+  condition String?
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+}
+
+model PersonIncome {
+  id                      String          @id @default(uuid()) @db.Char(36)
+  tenantId                String          @db.Char(36)
+  personId                String          @db.Char(36)
+  householdId             String?         @db.Char(36)
+  type                    String
+  amount                  Decimal         @db.Decimal(10, 2)
+  frequency               IncomeFrequency @default(MONTHLY)
+  contractType            String?
+  isHouseholdContribution Boolean         @default(true)
+  notes                   String?         @db.Text
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+  person    Person     @relation(fields: [personId], references: [id])
+  household Household? @relation(fields: [householdId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+  @@index([householdId])
+}
+
+model PersonFinancialEntry {
+  id                       String                   @id @default(uuid()) @db.Char(36)
+  tenantId                 String                   @db.Char(36)
+  personId                 String                   @db.Char(36)
+  householdId              String?                  @db.Char(36)
+  fromHouseholdId          String?                  @db.Char(36)
+  toHouseholdId            String?                  @db.Char(36)
+  entryType                PersonFinancialEntryType
+  category                 String
+  subcategory              String?
+  status                   String?
+  amount                   Decimal?                 @db.Decimal(10, 2)
+  frequency                IncomeFrequency          @default(MONTHLY)
+  contractType             String?
+  includeInHouseholdBudget Boolean                  @default(true)
+  startDate                DateTime?
+  endDate                  DateTime?
+  notes                    String?                  @db.Text
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @updatedAt
+
+  tenant        Tenant     @relation(fields: [tenantId], references: [id])
+  person        Person     @relation(fields: [personId], references: [id])
+  household     Household? @relation(fields: [householdId], references: [id])
+  fromHousehold Household? @relation("PersonFinancialEntryFromHousehold", fields: [fromHouseholdId], references: [id])
+  toHousehold   Household? @relation("PersonFinancialEntryToHousehold", fields: [toHouseholdId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+  @@index([householdId])
+  @@index([fromHouseholdId])
+  @@index([toHouseholdId])
+  @@index([entryType])
+  @@index([tenantId, personId, entryType])
+}
+
+model PersonRelation {
+  id              String   @id @default(uuid()) @db.Char(36)
+  tenantId        String   @db.Char(36)
+  personId        String   @db.Char(36)
+  relatedPersonId String   @db.Char(36)
+  type            String
+  livesTogether   Boolean  @default(false)
+  isLegalGuardian Boolean  @default(false)
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenant        Tenant @relation(fields: [tenantId], references: [id])
+  person        Person @relation("PersonRelationPerson", fields: [personId], references: [id])
+  relatedPerson Person @relation("PersonRelationRelated", fields: [relatedPersonId], references: [id])
+
+  @@unique([tenantId, personId, relatedPersonId, type])
+  @@index([tenantId])
+  @@index([personId])
+  @@index([relatedPersonId])
+}
+
+model PersonExpense {
+  id                 String          @id @default(uuid()) @db.Char(36)
+  tenantId           String          @db.Char(36)
+  personId           String          @db.Char(36)
+  householdId        String?         @db.Char(36)
+  type               String
+  amount             Decimal         @db.Decimal(10, 2)
+  frequency          IncomeFrequency @default(MONTHLY)
+  isHouseholdExpense Boolean         @default(true)
+  notes              String?         @db.Text
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+  person    Person     @relation(fields: [personId], references: [id])
+  household Household? @relation(fields: [householdId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+  @@index([householdId])
+}
+
+model PersonBenefit {
+  id          String          @id @default(uuid()) @db.Char(36)
+  tenantId    String          @db.Char(36)
+  personId    String          @db.Char(36)
+  householdId String?         @db.Char(36)
+  type        String
+  status      String?
+  amount      Decimal?        @db.Decimal(10, 2)
+  frequency   IncomeFrequency @default(MONTHLY)
+  startDate   DateTime?
+  endDate     DateTime?
+  notes       String?         @db.Text
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+  person    Person     @relation(fields: [personId], references: [id])
+  household Household? @relation(fields: [householdId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+  @@index([householdId])
+  @@index([tenantId, personId])
+}
+
+model PersonDetention {
+  id        String    @id @default(uuid()) @db.Char(36)
+  tenantId  String    @db.Char(36)
+  personId  String    @db.Char(36)
+  status    String
+  type      String?
+  unit      String?
+  startDate DateTime?
+  endDate   DateTime?
+  notes     String?   @db.Text
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+  @@index([tenantId, personId])
+}
+
+model PersonHealthCondition {
+  id            String    @id @default(uuid()) @db.Char(36)
+  tenantId      String    @db.Char(36)
+  personId      String    @db.Char(36)
+  type          String
+  description   String?   @db.Text
+  severity      String?
+  diagnosisDate DateTime?
+  documentUrl   String?
+  notes         String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+}
+
+model PersonMedication {
+  id                    String    @id @default(uuid()) @db.Char(36)
+  tenantId              String    @db.Char(36)
+  personId              String    @db.Char(36)
+  reason                String?
+  medication            String
+  dosage                String?
+  schedule              String?
+  startDate             DateTime?
+  endDate               DateTime?
+  prescribingDoctor     String?
+  permissionDocumentUrl String?
+  documentUrl           String?
+  notes                 String?   @db.Text
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+}
+
+model PersonEducation {
+  id          String    @id @default(uuid()) @db.Char(36)
+  tenantId    String    @db.Char(36)
+  personId    String    @db.Char(36)
+  level       String
+  status      String?
+  institution String?
+  grade       String?
+  schoolYear  String?
+  isCurrent   Boolean   @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  notes       String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  person Person @relation(fields: [personId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+  @@index([tenantId, personId])
+}
+
+enum HouseholdTransferType {
+  PENSION
+  TRANSFER
+}
+
+model HouseholdTransfer {
+  id              String                @id @default(uuid()) @db.Char(36)
+  tenantId        String                @db.Char(36)
+  personId        String                @db.Char(36)
+  fromHouseholdId String                @db.Char(36)
+  toHouseholdId   String                @db.Char(36)
+  type            HouseholdTransferType @default(PENSION)
+  amount          Decimal               @db.Decimal(10, 2)
+  frequency       IncomeFrequency       @default(MONTHLY)
+  notes           String?               @db.Text
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  tenant        Tenant    @relation(fields: [tenantId], references: [id])
+  person        Person    @relation(fields: [personId], references: [id])
+  fromHousehold Household @relation("HouseholdTransferFrom", fields: [fromHouseholdId], references: [id])
+  toHousehold   Household @relation("HouseholdTransferTo", fields: [toHouseholdId], references: [id])
+
+  @@index([tenantId])
+  @@index([personId])
+  @@index([fromHouseholdId])
+  @@index([toHouseholdId])
+}
+
+model UserSession {
+  id         String    @id @default(uuid()) @db.Char(36)
+  tenantId   String    @db.Char(36)
+  userId     String    @db.Char(36)
+  tokenHash  String    @db.VarChar(128)
+  expiresAt  DateTime
+  ipAddress  String?
+  userAgent  String?
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([tokenHash])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id         String    @id @default(uuid()) @db.Char(36)
+  tenantId   String    @db.Char(36)
+  userId     String    @db.Char(36)
+  tokenHash  String    @db.VarChar(128)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  revokedAt  DateTime?
+  ipAddress  String?
+  userAgent  String?
+  requestId  String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tokenHash])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AccessLog {
+  id        String          @id @default(uuid()) @db.Char(36)
+  tenantId  String          @db.Char(36)
+  userId    String          @db.Char(36)
+  action    AccessLogAction
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime        @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id        String         @id @default(uuid()) @db.Char(36)
+  tenantId  String         @db.Char(36)
+  userId    String?        @db.Char(36)
+  entity    String
+  entityId  String?        @db.Char(36)
+  action    AuditLogAction
+  before    Json?
+  after     Json?
+  ipAddress String?
+  userAgent String?
+  requestId String?
+  createdAt DateTime       @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User?  @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([entity])
+  @@index([entityId])
+  @@index([createdAt])
+}
+
+model Program {
+  id            String        @id @default(uuid()) @db.Char(36)
+  tenantId      String        @db.Char(36)
+  name          String
+  type          ProgramType
+  description   String?       @db.Text
+  tags          String?       @db.Text
+  internalNotes String?       @db.Text
+  status        ProgramStatus @default(PLANNED)
+  startsAt      DateTime?
+  endsAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  tenant      Tenant              @relation(fields: [tenantId], references: [id])
+  projects    Project[]
+  comments    ProgramComment[]
+  attachments ProgramAttachment[]
+
+  @@index([tenantId])
+  @@index([name])
+  @@index([status])
+}
+
+model ProgramComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  programId      String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant  @relation(fields: [tenantId], references: [id])
+  program    Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  authorUser User?   @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([programId, createdAt])
+  @@index([authorUserId])
+}
+
+model ProgramAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  programId        String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant  @relation(fields: [tenantId], references: [id])
+  program        Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  uploadedByUser User?   @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([programId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model Project {
+  id            String        @id @default(uuid()) @db.Char(36)
+  tenantId      String        @db.Char(36)
+  programId     String        @db.Char(36)
+  name          String
+  description   String?       @db.Text
+  tags          String?       @db.Text
+  internalNotes String?       @db.Text
+  status        ProjectStatus @default(PLANNED)
+  startsAt      DateTime?
+  endsAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  tenant       Tenant               @relation(fields: [tenantId], references: [id])
+  program      Program              @relation(fields: [programId], references: [id])
+  groups       ProjectGroup[]
+  peopleGroups ProjectPeopleGroup[]
+  enrollments  ProjectEnrollment[]
+  actions      ProjectAction[]
+  comments     ProjectComment[]
+  attachments  ProjectAttachment[]
+
+  @@index([tenantId])
+  @@index([programId])
+  @@index([name])
+  @@index([status])
+}
+
+model ProjectComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  projectId      String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant  @relation(fields: [tenantId], references: [id])
+  project    Project @relation(fields: [projectId], references: [id])
+  authorUser User?   @relation(fields: [authorUserId], references: [id])
+
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([authorUserId])
+}
+
+model ProjectAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  projectId        String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant  @relation(fields: [tenantId], references: [id])
+  project        Project @relation(fields: [projectId], references: [id])
+  uploadedByUser User?   @relation(fields: [uploadedByUserId], references: [id])
+
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([uploadedByUserId])
+}
+
+model PeopleGroup {
+  id            String          @id @default(uuid()) @db.Char(36)
+  tenantId      String          @db.Char(36)
+  name          String
+  groupType     PeopleGroupType @default(SEGMENT)
+  purpose       PeopleGroupPurpose @default(PUBLICO)
+  category      String?
+  description   String?         @db.Text
+  ageMin        Int?
+  ageMax        Int?
+  isActive      Boolean         @default(true)
+  internalNotes String?         @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  tenant              Tenant                     @relation(fields: [tenantId], references: [id])
+  participations      PeopleGroupParticipation[]
+  projectPeopleGroups ProjectPeopleGroup[]
+  actionPeopleGroups  ActionPeopleGroup[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([name])
+  @@index([groupType])
+  @@index([purpose])
+  @@index([category])
+  @@index([isActive])
+}
+
+model PeopleGroupParticipation {
+  id            String    @id @default(uuid()) @db.Char(36)
+  tenantId      String    @db.Char(36)
+  peopleGroupId String    @db.Char(36)
+  personId      String    @db.Char(36)
+  activeKey     String?   @db.VarChar(80)
+  isActive      Boolean   @default(true)
+  startsAt      DateTime  @default(now())
+  endsAt        DateTime?
+  deletedAt     DateTime?
+  internalNotes String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  peopleGroup PeopleGroup @relation(fields: [peopleGroupId], references: [id])
+  person      Person      @relation(fields: [personId], references: [id])
+
+  @@unique([tenantId, activeKey])
+  @@index([tenantId])
+  @@index([peopleGroupId])
+  @@index([personId])
+  @@index([activeKey])
+  @@index([isActive])
+}
+
+model PeopleSegment {
+  id            String   @id @default(uuid()) @db.Char(36)
+  tenantId      String   @db.Char(36)
+  name          String
+  category      String?
+  description   String?  @db.Text
+  ageMin        Int?
+  ageMax        Int?
+  isActive      Boolean  @default(true)
+  internalNotes String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant      Tenant                    @relation(fields: [tenantId], references: [id])
+  memberships PeopleSegmentMembership[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([name])
+  @@index([category])
+  @@index([isActive])
+}
+
+model PeopleSegmentMembership {
+  id            String    @id @default(uuid()) @db.Char(36)
+  tenantId      String    @db.Char(36)
+  segmentId     String    @db.Char(36)
+  personId      String    @db.Char(36)
+  activeKey     String?   @db.VarChar(80)
+  isActive      Boolean   @default(true)
+  startsAt      DateTime  @default(now())
+  endsAt        DateTime?
+  deletedAt     DateTime?
+  internalNotes String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  tenant  Tenant        @relation(fields: [tenantId], references: [id])
+  segment PeopleSegment @relation(fields: [segmentId], references: [id])
+  person  Person        @relation(fields: [personId], references: [id])
+
+  @@unique([tenantId, activeKey])
+  @@index([tenantId])
+  @@index([segmentId])
+  @@index([personId])
+  @@index([activeKey])
+  @@index([isActive])
+}
+
+model ProjectGroup {
+  id            String   @id @default(uuid()) @db.Char(36)
+  tenantId      String   @db.Char(36)
+  projectId     String   @db.Char(36)
+  name          String
+  description   String?  @db.Text
+  internalNotes String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant      Tenant                             @relation(fields: [tenantId], references: [id])
+  project     Project                            @relation(fields: [projectId], references: [id])
+  memberships ProjectEnrollmentGroupMembership[]
+  actions     ProjectAction[]
+
+  @@unique([tenantId, projectId, name])
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([name])
+}
+
+model ProjectPeopleGroup {
+  id                String            @id @default(uuid()) @db.Char(36)
+  tenantId          String            @db.Char(36)
+  projectId         String            @db.Char(36)
+  peopleGroupId     String            @db.Char(36)
+  participationKind ParticipationKind @default(PARTICIPANT)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+  project     Project     @relation(fields: [projectId], references: [id])
+  peopleGroup PeopleGroup @relation(fields: [peopleGroupId], references: [id])
+
+  @@unique([tenantId, projectId, peopleGroupId, participationKind])
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([peopleGroupId])
+  @@index([participationKind])
+}
+
+model ProjectEnrollment {
+  id                String                   @id @default(uuid()) @db.Char(36)
+  tenantId          String                   @db.Char(36)
+  projectId         String                   @db.Char(36)
+  personId          String                   @db.Char(36)
+  status            EnrollmentStatus         @default(ACTIVE)
+  participationKind ParticipationKind        @default(PARTICIPANT)
+  role              ProjectParticipationRole @default(PUBLICO_ATENDIDO)
+  startsAt          DateTime?
+  endsAt            DateTime?
+  deletedAt         DateTime?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+
+  tenant                     Tenant                                @relation(fields: [tenantId], references: [id])
+  project                    Project                               @relation(fields: [projectId], references: [id])
+  person                     Person                                @relation(fields: [personId], references: [id])
+  groupMemberships           ProjectEnrollmentGroupMembership[]
+  actionAttendances          ProjectActionAttendance[]
+  actionPeopleParticipations ProjectActionPeopleParticipation[]
+  targetedActions            ProjectAction[]
+
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([personId])
+  @@index([participationKind])
+  @@index([status])
+}
+
+model ProjectEnrollmentGroupMembership {
+  id           String    @id @default(uuid()) @db.Char(36)
+  tenantId     String    @db.Char(36)
+  enrollmentId String    @db.Char(36)
+  groupId      String    @db.Char(36)
+  activeKey    String?   @db.VarChar(80)
+  isActive     Boolean   @default(true)
+  startsAt     DateTime  @default(now())
+  endsAt       DateTime?
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  tenant     Tenant            @relation(fields: [tenantId], references: [id])
+  enrollment ProjectEnrollment @relation(fields: [enrollmentId], references: [id])
+  group      ProjectGroup      @relation(fields: [groupId], references: [id])
+
+  @@unique([tenantId, activeKey])
+  @@index([tenantId])
+  @@index([enrollmentId])
+  @@index([groupId])
+  @@index([activeKey])
+  @@index([isActive])
+}
+
+model ActionType {
+  id          String       @id @default(uuid()) @db.Char(36)
+  tenantId    String       @db.Char(36)
+  name        String
+  description String?      @db.Text
+  target      ActionTarget @default(PROJECT)
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  tenant  Tenant          @relation(fields: [tenantId], references: [id])
+  actions ProjectAction[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([name])
+  @@index([isActive])
+}
+
+model ProjectAction {
+  id                String       @id @default(uuid()) @db.Char(36)
+  tenantId          String       @db.Char(36)
+  projectId         String       @db.Char(36)
+  createdByUserId   String?      @db.Char(36)
+  groupId           String?      @db.Char(36)
+  targetEnrollmentId String?     @db.Char(36)
+  actionTypeId      String       @db.Char(36)
+  title             String
+  description       String?      @db.Text
+  tags              String?      @db.Text
+  internalNotes     String?      @db.Text
+  planHtml          String?      @db.Text
+  executedHtml      String?      @db.Text
+  conclusionHtml    String?      @db.Text
+  completionPercent Int?
+  photoPaths        Json?
+  status            ActionStatus @default(PLANNED)
+  plannedStartAt    DateTime?
+  plannedEndAt      DateTime?
+  executedStartAt   DateTime?
+  executedEndAt     DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  tenant               Tenant                             @relation(fields: [tenantId], references: [id])
+  project              Project                            @relation(fields: [projectId], references: [id])
+  createdByUser        User?                              @relation(fields: [createdByUserId], references: [id])
+  group                ProjectGroup?                      @relation(fields: [groupId], references: [id])
+  targetEnrollment     ProjectEnrollment?                 @relation(fields: [targetEnrollmentId], references: [id])
+  actionType           ActionType                         @relation(fields: [actionTypeId], references: [id])
+  attendances          ProjectActionAttendance[]
+  peopleGroups         ActionPeopleGroup[]
+  peopleParticipations ProjectActionPeopleParticipation[]
+  comments             ProjectActionComment[]
+  attachments          ProjectActionAttachment[]
+
+  @@index([tenantId])
+  @@index([projectId])
+  @@index([createdByUserId])
+  @@index([groupId])
+  @@index([targetEnrollmentId])
+  @@index([actionTypeId])
+  @@index([status])
+  @@index([plannedStartAt])
+}
+
+model ProjectActionComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  actionId       String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant        @relation(fields: [tenantId], references: [id])
+  action     ProjectAction @relation(fields: [actionId], references: [id])
+  authorUser User?         @relation(fields: [authorUserId], references: [id])
+
+  @@index([tenantId])
+  @@index([actionId])
+  @@index([authorUserId])
+}
+
+model ProjectActionAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  actionId         String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant        @relation(fields: [tenantId], references: [id])
+  action         ProjectAction @relation(fields: [actionId], references: [id])
+  uploadedByUser User?         @relation(fields: [uploadedByUserId], references: [id])
+
+  @@index([tenantId])
+  @@index([actionId])
+  @@index([uploadedByUserId])
+}
+
+model ActionPeopleGroup {
+  id                String            @id @default(uuid()) @db.Char(36)
+  tenantId          String            @db.Char(36)
+  actionId          String            @db.Char(36)
+  peopleGroupId     String            @db.Char(36)
+  participationKind ParticipationKind @default(PARTICIPANT)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  tenant      Tenant        @relation(fields: [tenantId], references: [id])
+  action      ProjectAction @relation(fields: [actionId], references: [id])
+  peopleGroup PeopleGroup   @relation(fields: [peopleGroupId], references: [id])
+
+  @@unique([tenantId, actionId, peopleGroupId, participationKind])
+  @@index([tenantId])
+  @@index([actionId])
+  @@index([peopleGroupId])
+  @@index([participationKind])
+}
+
+model ProjectActionAttendance {
+  id                   String           @id @default(uuid()) @db.Char(36)
+  tenantId             String           @db.Char(36)
+  actionId             String           @db.Char(36)
+  enrollmentId         String           @db.Char(36)
+  status               AttendanceStatus @default(PRESENT)
+  notes                String?          @db.Text
+  qualityScore         Int?
+  qualityNotes         String?          @db.Text
+  isHighlight          Boolean          @default(false)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  tenant             Tenant                               @relation(fields: [tenantId], references: [id])
+  action             ProjectAction                        @relation(fields: [actionId], references: [id])
+  enrollment         ProjectEnrollment                    @relation(fields: [enrollmentId], references: [id])
+
+  @@unique([tenantId, actionId, enrollmentId])
+  @@index([tenantId])
+  @@index([actionId])
+  @@index([enrollmentId])
+  @@index([status])
+}
+
+model ProjectActionPeopleParticipation {
+  id                String                        @id @default(uuid()) @db.Char(36)
+  tenantId          String                        @db.Char(36)
+  actionId          String                        @db.Char(36)
+  personId          String                        @db.Char(36)
+  enrollmentId      String?                       @db.Char(36)
+  participationKind ParticipationKind             @default(TEAM)
+  role              ActionPeopleParticipationRole @default(PARTICIPANTE)
+  activeKey         String?                       @db.VarChar(120)
+  isActive          Boolean                       @default(true)
+  startsAt          DateTime                      @default(now())
+  endsAt            DateTime?
+  deletedAt         DateTime?
+  internalNotes     String?                       @db.Text
+  createdAt         DateTime                      @default(now())
+  updatedAt         DateTime                      @updatedAt
+
+  tenant     Tenant             @relation(fields: [tenantId], references: [id])
+  action     ProjectAction      @relation(fields: [actionId], references: [id])
+  person     Person             @relation(fields: [personId], references: [id])
+  enrollment ProjectEnrollment? @relation(fields: [enrollmentId], references: [id])
+
+  @@unique([tenantId, activeKey])
+  @@index([tenantId])
+  @@index([actionId])
+  @@index([personId])
+  @@index([enrollmentId])
+  @@index([participationKind])
+  @@index([role])
+  @@index([activeKey])
+  @@index([isActive])
+}
+
+model PantryItem {
+  id            String   @id @default(uuid()) @db.Char(36)
+  tenantId      String   @db.Char(36)
+  name          String
+  group         String?
+  defaultSector String   @default("Geral")
+  unit          String
+  minStock      Decimal  @db.Decimal(10, 2)
+  notes         String?  @db.Text
+  tags          String?  @db.Text
+  internalNotes String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant      Tenant                 @relation(fields: [tenantId], references: [id])
+  entries     PantryEntry[]
+  exits       PantryExit[]
+  comments    PantryItemComment[]
+  attachments PantryItemAttachment[]
+
+  @@index([tenantId])
+  @@index([name])
+}
+
+model PantrySector {
+  id        String   @id @default(uuid()) @db.Char(36)
+  tenantId  String   @db.Char(36)
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model PantryDonor {
+  id            String          @id @default(uuid()) @db.Char(36)
+  tenantId      String          @db.Char(36)
+  name          String
+  type          PantryDonorType @default(PERSON)
+  contact       String?
+  avatarUrl     String?
+  tags          String?         @db.Text
+  internalNotes String?         @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  tenant      Tenant                  @relation(fields: [tenantId], references: [id])
+  entries     PantryEntry[]
+  comments    PantryDonorComment[]
+  attachments PantryDonorAttachment[]
+
+  @@index([tenantId])
+  @@index([name])
+}
+
+model PantryEntry {
+  id               String    @id @default(uuid()) @db.Char(36)
+  tenantId         String    @db.Char(36)
+  itemId           String    @db.Char(36)
+  donorId          String?   @db.Char(36)
+  sector           String
+  quantity         Decimal   @db.Decimal(10, 2)
+  unit             String
+  entryDate        DateTime  @default(now())
+  expiryDate       DateTime?
+  notes            String?   @db.Text
+  tags             String?   @db.Text
+  internalNotes    String?   @db.Text
+  reversalOfExitId String?   @db.Char(36)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  tenant          Tenant                  @relation(fields: [tenantId], references: [id])
+  item            PantryItem              @relation(fields: [itemId], references: [id])
+  donor           PantryDonor?            @relation(fields: [donorId], references: [id])
+  exitAllocations PantryExitAllocation[]
+  reversalOfExit  PantryExit?             @relation("PantryEntryReversalOfExit", fields: [reversalOfExitId], references: [id])
+  reversalExits   PantryExit[]            @relation("PantryExitReversalOfEntry")
+  comments        PantryEntryComment[]
+  attachments     PantryEntryAttachment[]
+
+  @@index([tenantId])
+  @@index([itemId])
+  @@index([donorId])
+  @@index([sector])
+  @@index([entryDate])
+  @@index([expiryDate])
+  @@index([reversalOfExitId])
+}
+
+model PantryExit {
+  id                String         @id @default(uuid()) @db.Char(36)
+  tenantId          String         @db.Char(36)
+  itemId            String         @db.Char(36)
+  sector            String
+  quantity          Decimal        @db.Decimal(10, 2)
+  unit              String
+  exitDate          DateTime       @default(now())
+  type              PantryExitType @default(ATTENDED)
+  eventName         String?
+  notes             String?        @db.Text
+  tags              String?        @db.Text
+  internalNotes     String?        @db.Text
+  reversalOfEntryId String?        @db.Char(36)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenant          Tenant                 @relation(fields: [tenantId], references: [id])
+  item            PantryItem             @relation(fields: [itemId], references: [id])
+  allocations     PantryExitAllocation[]
+  reversalOfEntry PantryEntry?           @relation("PantryExitReversalOfEntry", fields: [reversalOfEntryId], references: [id])
+  reversalEntries PantryEntry[]          @relation("PantryEntryReversalOfExit")
+  comments        PantryExitComment[]
+  attachments     PantryExitAttachment[]
+
+  @@index([tenantId])
+  @@index([itemId])
+  @@index([sector])
+  @@index([exitDate])
+  @@index([reversalOfEntryId])
+}
+
+model PantryExitAllocation {
+  id        String   @id @default(uuid()) @db.Char(36)
+  tenantId  String   @db.Char(36)
+  exitId    String   @db.Char(36)
+  entryId   String   @db.Char(36)
+  quantity  Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+
+  tenant Tenant      @relation(fields: [tenantId], references: [id])
+  exit   PantryExit  @relation(fields: [exitId], references: [id], onDelete: Cascade)
+  entry  PantryEntry @relation(fields: [entryId], references: [id], onDelete: Restrict)
+
+  @@unique([exitId, entryId])
+  @@index([tenantId])
+  @@index([exitId])
+  @@index([entryId])
+}
+
+model PantryItemComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  itemId         String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id])
+  item       PantryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  authorUser User?      @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([itemId, createdAt])
+  @@index([authorUserId])
+}
+
+model PantryItemAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  itemId           String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant     @relation(fields: [tenantId], references: [id])
+  item           PantryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  uploadedByUser User?      @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([itemId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model PantryDonorComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  donorId        String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+  donor      PantryDonor @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  authorUser User?       @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([donorId, createdAt])
+  @@index([authorUserId])
+}
+
+model PantryDonorAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  donorId          String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant      @relation(fields: [tenantId], references: [id])
+  donor          PantryDonor @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  uploadedByUser User?       @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([donorId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model PantryEntryComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  entryId        String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+  entry      PantryEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  authorUser User?       @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([entryId, createdAt])
+  @@index([authorUserId])
+}
+
+model PantryEntryAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  entryId          String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant      @relation(fields: [tenantId], references: [id])
+  entry          PantryEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  uploadedByUser User?       @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([entryId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model PantryExitComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  exitId         String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id])
+  exit       PantryExit @relation(fields: [exitId], references: [id], onDelete: Cascade)
+  authorUser User?      @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([exitId, createdAt])
+  @@index([authorUserId])
+}
+
+model PantryExitAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  exitId           String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant     @relation(fields: [tenantId], references: [id])
+  exit           PantryExit @relation(fields: [exitId], references: [id], onDelete: Cascade)
+  uploadedByUser User?      @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([exitId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model DepositItem {
+  id            String   @id @default(uuid()) @db.Char(36)
+  tenantId      String   @db.Char(36)
+  name          String
+  group         String?
+  defaultSector String   @default("Geral")
+  unit          String
+  minStock      Decimal  @db.Decimal(10, 2)
+  notes         String?  @db.Text
+  tags          String?  @db.Text
+  internalNotes String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant      Tenant                  @relation(fields: [tenantId], references: [id])
+  entries     DepositEntry[]
+  exits       DepositExit[]
+  comments    DepositItemComment[]
+  attachments DepositItemAttachment[]
+
+  @@index([tenantId])
+  @@index([name])
+}
+
+model DepositSector {
+  id        String   @id @default(uuid()) @db.Char(36)
+  tenantId  String   @db.Char(36)
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model DepositDonor {
+  id            String           @id @default(uuid()) @db.Char(36)
+  tenantId      String           @db.Char(36)
+  name          String
+  type          DepositDonorType @default(PERSON)
+  contact       String?
+  avatarUrl     String?
+  tags          String?          @db.Text
+  internalNotes String?          @db.Text
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  tenant      Tenant                   @relation(fields: [tenantId], references: [id])
+  entries     DepositEntry[]
+  comments    DepositDonorComment[]
+  attachments DepositDonorAttachment[]
+
+  @@index([tenantId])
+  @@index([name])
+}
+
+model DepositEntry {
+  id               String    @id @default(uuid()) @db.Char(36)
+  tenantId         String    @db.Char(36)
+  itemId           String    @db.Char(36)
+  donorId          String?   @db.Char(36)
+  sector           String
+  quantity         Decimal   @db.Decimal(10, 2)
+  unit             String
+  entryDate        DateTime  @default(now())
+  expiryDate       DateTime?
+  notes            String?   @db.Text
+  tags             String?   @db.Text
+  internalNotes    String?   @db.Text
+  reversalOfExitId String?   @db.Char(36)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  tenant          Tenant                   @relation(fields: [tenantId], references: [id])
+  item            DepositItem              @relation(fields: [itemId], references: [id])
+  donor           DepositDonor?            @relation(fields: [donorId], references: [id])
+  exitAllocations DepositExitAllocation[]
+  reversalOfExit  DepositExit?             @relation("DepositEntryReversalOfExit", fields: [reversalOfExitId], references: [id])
+  reversalExits   DepositExit[]            @relation("DepositExitReversalOfEntry")
+  comments        DepositEntryComment[]
+  attachments     DepositEntryAttachment[]
+
+  @@index([tenantId])
+  @@index([itemId])
+  @@index([donorId])
+  @@index([sector])
+  @@index([entryDate])
+  @@index([expiryDate])
+  @@index([reversalOfExitId])
+}
+
+model DepositExit {
+  id                String          @id @default(uuid()) @db.Char(36)
+  tenantId          String          @db.Char(36)
+  itemId            String          @db.Char(36)
+  sector            String
+  quantity          Decimal         @db.Decimal(10, 2)
+  unit              String
+  exitDate          DateTime        @default(now())
+  type              DepositExitType @default(FINAL_REMOVAL)
+  destinationName   String?
+  destinationType   String?
+  expectedReturnAt  DateTime?
+  returnedAt        DateTime?
+  returnedQuantity  Decimal?        @db.Decimal(10, 2)
+  returnNotes       String?         @db.Text
+  notes             String?         @db.Text
+  tags              String?         @db.Text
+  internalNotes     String?         @db.Text
+  reversalOfEntryId String?         @db.Char(36)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  tenant          Tenant                  @relation(fields: [tenantId], references: [id])
+  item            DepositItem             @relation(fields: [itemId], references: [id])
+  allocations     DepositExitAllocation[]
+  reversalOfEntry DepositEntry?           @relation("DepositExitReversalOfEntry", fields: [reversalOfEntryId], references: [id])
+  reversalEntries DepositEntry[]          @relation("DepositEntryReversalOfExit")
+  comments        DepositExitComment[]
+  attachments     DepositExitAttachment[]
+
+  @@index([tenantId])
+  @@index([itemId])
+  @@index([sector])
+  @@index([exitDate])
+  @@index([reversalOfEntryId])
+}
+
+model DepositExitAllocation {
+  id        String   @id @default(uuid()) @db.Char(36)
+  tenantId  String   @db.Char(36)
+  exitId    String   @db.Char(36)
+  entryId   String   @db.Char(36)
+  quantity  Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+
+  tenant Tenant       @relation(fields: [tenantId], references: [id])
+  exit   DepositExit  @relation(fields: [exitId], references: [id], onDelete: Cascade)
+  entry  DepositEntry @relation(fields: [entryId], references: [id], onDelete: Restrict)
+
+  @@unique([exitId, entryId])
+  @@index([tenantId])
+  @@index([exitId])
+  @@index([entryId])
+}
+
+model DepositItemComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  itemId         String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+  item       DepositItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  authorUser User?       @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([itemId, createdAt])
+  @@index([authorUserId])
+}
+
+model DepositItemAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  itemId           String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant      @relation(fields: [tenantId], references: [id])
+  item           DepositItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  uploadedByUser User?       @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([itemId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model DepositDonorComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  donorId        String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant       @relation(fields: [tenantId], references: [id])
+  donor      DepositDonor @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  authorUser User?        @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([donorId, createdAt])
+  @@index([authorUserId])
+}
+
+model DepositDonorAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  donorId          String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant       @relation(fields: [tenantId], references: [id])
+  donor          DepositDonor @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  uploadedByUser User?        @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([donorId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model DepositEntryComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  entryId        String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant       @relation(fields: [tenantId], references: [id])
+  entry      DepositEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  authorUser User?        @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([entryId, createdAt])
+  @@index([authorUserId])
+}
+
+model DepositEntryAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  entryId          String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant       @relation(fields: [tenantId], references: [id])
+  entry          DepositEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  uploadedByUser User?        @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([entryId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model DepositExitComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  exitId         String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+  exit       DepositExit @relation(fields: [exitId], references: [id], onDelete: Cascade)
+  authorUser User?       @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([exitId, createdAt])
+  @@index([authorUserId])
+}
+
+model DepositExitAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  exitId           String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant      @relation(fields: [tenantId], references: [id])
+  exit           DepositExit @relation(fields: [exitId], references: [id], onDelete: Cascade)
+  uploadedByUser User?       @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([exitId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model TaskOrganizerTask {
+  id            String                @id @default(uuid()) @db.Char(36)
+  tenantId      String                @db.Char(36)
+  title         String
+  summary       String?               @db.Text
+  description   String?               @db.Text
+  status        TaskOrganizerStatus   @default(BACKLOG)
+  priority      TaskOrganizerPriority @default(MEDIUM)
+  kind          TaskOrganizerKind     @default(FEATURE)
+  owner         String?
+  ownerUserId   String?               @db.Char(36)
+  team          String?
+  startDate     DateTime?
+  dueDate       DateTime?
+  isMilestone   Boolean               @default(false)
+  progress      Int                   @default(0)
+  effortPoints  Int?
+  tags          Json?
+  internalNotes String?               @db.Text
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  tenant                Tenant                        @relation(fields: [tenantId], references: [id])
+  ownerUser             User?                         @relation("TaskOrganizerAssignedUser", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  checklistItems        TaskOrganizerChecklistItem[]
+  subtasks              TaskOrganizerSubtask[]
+  comments              TaskOrganizerComment[]
+  attachments           TaskOrganizerAttachment[]
+  blockedByDependencies TaskOrganizerTaskDependency[] @relation("TaskOrganizerTaskBlockedBy")
+  dependentTaskLinks    TaskOrganizerTaskDependency[] @relation("TaskOrganizerTaskBlocks")
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, priority])
+  @@index([tenantId, kind])
+  @@index([tenantId, owner])
+  @@index([ownerUserId])
+  @@index([startDate])
+  @@index([dueDate])
+}
+
+model TaskOrganizerAttachment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  tenantId         String   @db.Char(36)
+  taskId           String   @db.Char(36)
+  uploadedByUserId String?  @db.Char(36)
+  label            String
+  filePath         String
+  mimeType         String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant         Tenant            @relation(fields: [tenantId], references: [id])
+  task           TaskOrganizerTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  uploadedByUser User?             @relation(fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([taskId, createdAt])
+  @@index([uploadedByUserId])
+}
+
+model TaskOrganizerChecklistItem {
+  id          String    @id @default(uuid()) @db.Char(36)
+  tenantId    String    @db.Char(36)
+  taskId      String    @db.Char(36)
+  label       String
+  done        Boolean   @default(false)
+  owner       String?
+  ownerUserId String?   @db.Char(36)
+  dueDate     DateTime?
+  notes       String?   @db.Text
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant    Tenant            @relation(fields: [tenantId], references: [id])
+  task      TaskOrganizerTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  ownerUser User?             @relation("TaskOrganizerChecklistAssignedUser", fields: [ownerUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([taskId, sortOrder])
+  @@index([ownerUserId])
+}
+
+model TaskOrganizerSubtask {
+  id          String              @id @default(uuid()) @db.Char(36)
+  tenantId    String              @db.Char(36)
+  taskId      String              @db.Char(36)
+  title       String
+  status      TaskOrganizerStatus @default(BACKLOG)
+  owner       String?
+  ownerUserId String?             @db.Char(36)
+  startDate   DateTime?
+  dueDate     DateTime?
+  description String?             @db.Text
+  sortOrder   Int                 @default(0)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  tenant    Tenant            @relation(fields: [tenantId], references: [id])
+  task      TaskOrganizerTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  ownerUser User?             @relation("TaskOrganizerSubtaskAssignedUser", fields: [ownerUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([taskId, sortOrder])
+  @@index([ownerUserId])
+}
+
+model TaskOrganizerComment {
+  id             String   @id @default(uuid()) @db.Char(36)
+  tenantId       String   @db.Char(36)
+  taskId         String   @db.Char(36)
+  authorUserId   String?  @db.Char(36)
+  body           String   @db.Text
+  mentionUserIds Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant     Tenant            @relation(fields: [tenantId], references: [id])
+  task       TaskOrganizerTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorUser User?             @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([taskId, createdAt])
+  @@index([authorUserId])
+}
+
+model TaskOrganizerTaskDependency {
+  id              String   @id @default(uuid()) @db.Char(36)
+  tenantId        String   @db.Char(36)
+  taskId          String   @db.Char(36)
+  dependsOnTaskId String   @db.Char(36)
+  createdAt       DateTime @default(now())
+
+  tenant        Tenant            @relation(fields: [tenantId], references: [id])
+  task          TaskOrganizerTask @relation("TaskOrganizerTaskBlockedBy", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOnTask TaskOrganizerTask @relation("TaskOrganizerTaskBlocks", fields: [dependsOnTaskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, dependsOnTaskId])
+  @@index([tenantId])
+  @@index([taskId])
+  @@index([dependsOnTaskId])
+}
+
+model TenantRegistration {
+  id     String                   @id @default(uuid()) @db.Char(36)
+  method TenantRegistrationMethod
+  status TenantRegistrationStatus @default(PENDING_VERIFICATION)
+
+  tenantName String
+  tenantSlug String
+
+  adminName         String?
+  adminEmail        String?
+  adminPasswordHash String?
+
+  oauthProviderSub String?
+  oauthStateHash   String?
+
+  verificationCodeHash      String?
+  verificationCodeExpiresAt DateTime?
+
+  tenantId    String?   @db.Char(36)
+  adminUserId String?   @db.Char(36)
+  confirmedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([adminEmail])
+  @@index([tenantSlug])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model UserMfaTotpSetup {
+  id        String   @id @default(uuid()) @db.Char(36)
+  tenantId  String   @db.Char(36)
+  userId    String   @db.Char(36)
+  secretEnc String   @db.Text
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model UserMfaChallenge {
+  id         String    @id @default(uuid()) @db.Char(36)
+  tenantId   String    @db.Char(36)
+  userId     String    @db.Char(36)
+  type       String
+  attempts   Int       @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model UserTrustedDevice {
+  id         String    @id @default(uuid()) @db.Char(36)
+  tenantId   String    @db.Char(36)
+  userId     String    @db.Char(36)
+  tokenHash  String    @db.VarChar(128)
+  label      String?
+  ipAddress  String?
+  userAgent  String?
+  lastUsedAt DateTime?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, tokenHash])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model UserMfaRecoveryCode {
+  id        String    @id @default(uuid()) @db.Char(36)
+  tenantId  String    @db.Char(36)
+  userId    String    @db.Char(36)
+  codeHash  String    @db.VarChar(128)
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, codeHash])
+  @@index([tenantId])
+  @@index([userId])
+}

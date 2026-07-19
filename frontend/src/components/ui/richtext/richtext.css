@@ -1,0 +1,278 @@
+/* ===============================
+   BASE DO EDITOR
+=============================== */
+
+.ProseMirror {
+  min-height: 140px;
+  padding: 16px;
+  border: 0;
+  border-radius: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #24292f;
+  background: #ffffff;
+}
+
+.ProseMirror:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+}
+
+/* ===============================
+   TOOLBAR
+=============================== */
+
+.richtext-root {
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.richtext-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #f8f9fa;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.richtext-body {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 0;
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 0px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: #d0d7de;
+  margin: 0 4px;
+}
+
+.toolbar button {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar button:hover:not(:disabled) {
+  background: #e9eef6;
+}
+
+.toolbar button.active {
+  background: #1976d2;
+  color: #fff;
+}
+
+.toolbar button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   CONTEÚDO TIPTAP
+=============================== */
+
+.tiptap {
+  word-break: break-word;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Parágrafo */
+.tiptap p {
+  margin: 0.75rem 0;
+}
+
+/* ===============================
+   HEADINGS
+=============================== */
+
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 2.2rem;
+  margin-bottom: 0.8rem;
+}
+
+.tiptap h1 {
+  font-size: 1.6rem;
+  border-bottom: 1px solid #eaeef2;
+  padding-bottom: 0.3rem;
+}
+
+.tiptap h2 {
+  font-size: 1.35rem;
+}
+
+.tiptap h3 {
+  font-size: 1.15rem;
+}
+
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+  font-size: 1rem;
+  color: #57606a;
+}
+
+/* ===============================
+   LISTAS
+=============================== */
+
+.tiptap ul {
+  list-style-type: disc;
+}
+
+.tiptap ol {
+  list-style-type: decimal;
+}
+
+.tiptap ul,
+.tiptap ol {
+  padding-left: 1.75rem;
+  margin: 1rem 0;
+}
+
+.tiptap li {
+  margin: 0.35rem 0;
+}
+
+.tiptap li::marker {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+/* ===============================
+   TEXTO
+=============================== */
+
+.tiptap strong {
+  font-weight: 600;
+}
+
+.tiptap em {
+  font-style: italic;
+}
+
+.tiptap s {
+  text-decoration: line-through;
+}
+
+/* ===============================
+   CÓDIGO
+=============================== */
+
+.tiptap code {
+  background: #f6f8fa;
+  border-radius: 4px;
+  padding: 0.15em 0.35em;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85em;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.tiptap pre {
+  background: #00000022;
+  color: #424242;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  max-width: 100%;
+  width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+  margin: 1.5rem 0;
+}
+
+.tiptap pre code {
+  background: none;
+  display: block;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* ===============================
+   BLOCKQUOTE
+=============================== */
+
+.tiptap blockquote {
+  border-left: 4px solid #1976d2;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  color: #57606a;
+  font-style: italic;
+}
+
+/* ===============================
+   HR
+=============================== */
+
+.tiptap hr {
+  border: none;
+  border-top: 1px solid #eaeef2;
+  margin: 2rem 0;
+}
+
+/* ===============================
+   SELEÇÃO
+=============================== */
+
+.tiptap ::selection {
+  background: rgba(25, 118, 210, 0.25);
+}

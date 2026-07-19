@@ -1,0 +1,121 @@
+name: terceirogestor
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    container_name: tg_postgres
+    ports:
+      - "${POSTGRES_BIND_ADDRESS:-127.0.0.1}:${POSTGRES_HOST_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:-terceirogestor}
+      TZ: ${TZ:-America/Sao_Paulo}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-terceirogestor}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    logging: *default-logging
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    container_name: tg_backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_BIND_ADDRESS:-0.0.0.0}:${BACKEND_PORT:-3001}:8080"
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      RUN_DB_PRESTART: ${RUN_DB_PRESTART:-true}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-terceirogestor}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      APP_NAME: ${APP_NAME:-Terceiro Gestor}
+      TOTP_ENCRYPTION_KEY: ${TOTP_ENCRYPTION_KEY:-}
+      PII_MASTER_KEY: ${PII_MASTER_KEY:-}
+      WEB_URL: ${WEB_URL:-http://localhost:3000}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-no-reply@terceirogestor.local}
+      GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
+      GOOGLE_OAUTH_REDIRECT_URI: ${GOOGLE_OAUTH_REDIRECT_URI:-http://localhost:3000/api/registration/oauth/google/callback}
+      MICROSOFT_OAUTH_CLIENT_ID: ${MICROSOFT_OAUTH_CLIENT_ID:-}
+      MICROSOFT_OAUTH_CLIENT_SECRET: ${MICROSOFT_OAUTH_CLIENT_SECRET:-}
+      MICROSOFT_OAUTH_REDIRECT_URI: ${MICROSOFT_OAUTH_REDIRECT_URI:-http://localhost:3000/api/registration/oauth/microsoft/callback}
+      TZ: ${TZ:-America/Sao_Paulo}
+    volumes:
+      - uploads_data:/app/uploads
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const port = process.env.PORT || 8080; require('http').get({ host: '127.0.0.1', port, path: '/' }, (res) => { if (res.statusCode !== 200) process.exit(1); res.resume(); }).on('error', () => process.exit(1));",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging: *default-logging
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: ${FRONTEND_PUBLIC_API_URL:-http://localhost:3001}
+    restart: unless-stopped
+    container_name: tg_frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_BIND_ADDRESS:-0.0.0.0}:${FRONTEND_PORT:-3000}:8080"
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      HOSTNAME: 0.0.0.0
+      API_INTERNAL_URL: ${API_INTERNAL_URL:-http://backend:8080}
+      NEXT_PUBLIC_PWA_SW: ${NEXT_PUBLIC_PWA_SW:-0}
+      NEXT_PUBLIC_PWA_FORCE_INSTALL: ${NEXT_PUBLIC_PWA_FORCE_INSTALL:-0}
+      TZ: ${TZ:-America/Sao_Paulo}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const port = process.env.PORT || 8080; require('http').get({ host: '127.0.0.1', port, path: '/' }, (res) => { if (res.statusCode !== 200) process.exit(1); res.resume(); }).on('error', () => process.exit(1));",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging: *default-logging
+
+volumes:
+  postgres_data:
+    name: terceirogestor_postgres_data
+  uploads_data:
+    name: terceirogestor_uploads_data
